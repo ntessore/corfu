@@ -8,7 +8,7 @@ Authors:
 Projections in cosmic lensing
 -----------------------------
 
-Our aim to compute the angular correlation function :math:`w(\theta)` of the
+Our aim is to compute the angular correlation function :math:`w(\theta)` of the
 cosmic convergence field,
 
 .. math::
