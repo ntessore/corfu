@@ -45,7 +45,26 @@ at cosmic times :math:`t_1` and :math:`t_2` corresponding to :math:`x_1` and
 :eq:`w-kappa` and :eq:`q`; however, everything that follows applies identically
 to nonflat geometries.
 
-*[TODO: Other two-point functions.]*
+Other important two-point functions in weak lensing are galaxy clustering and galaxy-galaxy lensing.
+Galaxy clustering quantifies correlations between galaxy number density fields
+
+.. math::
+   :label: w_gg
+   
+    w_{gg}(\theta)
+        = \frac{1}{c^2} \iint_{0}^{\infty}  \! b(x_1) n_1(x_1)H(x_1) \, \frac{b(x_2) n_2(x_2)H(x_2) \, \xi(r_{12}; t_1, t_2) \, dx_1 \, dx_2 \; ,
+
+where :math:`b(x)` is the bias parameter and :math:`H(x)` the Hubble parameter at a redshift corresponding to a comoving distance :math:`x`.
+
+
+Galaxy-galaxy lensing quantifies the correlation between the shape of background (or source) and foreground (lens) galaxy number density. In the weak lensing regime, the observed galaxy shape is the sum of an intrinsic (unlensed component) and a shear due to gravitational lensing. For simplicity, we only consider the shear component:
+
+.. math::
+   :label: w_gk
+    
+     w_{\kappa g}(\theta)
+        = \frac{3H_0^2\Omega_m}{2c^3} \iint_{0}^{\infty} \! \frac{q_1(x_1) \, x_1}{a(x_1)} \, b(x_2) n_2(x_2)H(x_2) \, \xi(r_{12}; t_1, t_2) dx_1 \, dx_2 \;. 
+
 
 Generic form:
 
@@ -110,7 +129,7 @@ cosmic shear.
 How to compute the projection
 -----------------------------
 
-We have seen in the introduction that evaluating the angular power spectrum is
+Evaluating the angular power spectrum is
 far from straightforward. The reason is that the integral :eq:`cl` contains the
 product of two highly oscillatory spherical Bessel functions :math:`j_l(kx_1) \,
 j_l(kx_2)`. However, this is not dissimilar to the well-known problem of
@@ -131,7 +150,7 @@ that we can derive the general form of such a solution, if it exists, without
 performing any actual calculations.
 
 To this end, let us assume for a moment that there exists a set of basis
-functions :math:`\tilde{\jmath}_{l'}(k)` such that \emph{i)}~the unequal-time
+functions :math:`\tilde{\jmath}_{l'}(k)` such that *i)* the unequal-time
 power spectrum can be expanded in this basis,
 
  .. math::
@@ -141,7 +160,7 @@ power spectrum can be expanded in this basis,
     = \sum_{l'} a_{l'}(t_1, t_2) \, \tilde{\jmath}_{l'}(k) \;,
 
 where the modes :math:`a_{l'}(t_1, t_2)` of the expansion are necessarily
-time-dependent, and \emph{ii)}~that the overlap integral between two spherical
+time-dependent, and *ii)* that the overlap integral between two spherical
 Bessel functions and the basis functions reduces to coefficients
 :math:`\mathfrak{J}_{ll'}` which can be evaluated,
 
@@ -276,7 +295,7 @@ where the distance between the points in terms of :math:`x` and :math:`r` is now
 
 Limber :cite:`1953ApJ___117__134L,1954ApJ___119__655L` introduced an
 approximation for the integral :eq:`w-limber-variables` using the assumption
-\emph{i)} that the filters and correlation function change slowly and can be
+*i)* that the filters and correlation function change slowly and can be
 approximated by their midpoint values,
 
 .. math::
@@ -284,7 +303,7 @@ approximated by their midpoint values,
     f_1(x+R/2) \, f_2(x-R/2) \, \xi(r_{12}; t_1, t_2)
     \approx f_1(x) \, f_2(x) \, \xi(r_{12}; t) \;,
 
-where :math:`t = t(x)`; \emph{ii)} that the angle :math:`\theta` between the
+where :math:`t = t(x)`; *ii)* that the angle :math:`\theta` between the
 points is small, :math:`\theta \ll 1`, so that the distance :math:`r_{12}` can
 be approximated as
 
@@ -293,7 +312,7 @@ be approximated as
     r_{12}
     \approx \sqrt{x^2\theta^2 + R^2} \;;
 
-and \emph{iii)} that the integral over :math:`R` can be extended over the entire
+and *iii)* that the integral over :math:`R` can be extended over the entire
 real line.  Limber's approximation for the correlation function
 :eq:`w-limber-variables` is thus
 
@@ -364,11 +383,12 @@ to its angular power spectrum :math:`C_l` by the sum :eq:`cltow`. The inverse
 relation is the integral :cite:`2019arXiv190409973T`
 
 .. math::
+   :label: w_to_cl
 
    C_l = 2\pi \int_{0}^{\pi} \! w(\theta) \,
                                     P_l(\cos\theta) \sin(\theta) \, d\theta \;,
 
-which is yet another difficult to compute, oscillatory integral. Clearly, an
+which is yet another difficult oscillatory integral to compute. Clearly, an
 alternative approach is needed.
 
 Given a set of angles :math:`\theta_1, \theta_2, \ldots`, the computed angular
@@ -378,6 +398,7 @@ correlation function forms the vector :math:`w = (w_k)` with components
 :math:`l_{\max}`.  The truncated sum :eq:`cltow` can hence be written
 
 .. math::
+   :label: cl_to_w
 
     w_k
     = \sum_{l=0}^{l_{\max}} m_{kl} \, C_l
