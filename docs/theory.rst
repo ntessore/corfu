@@ -2,7 +2,7 @@ Theory
 ======
 
 Authors:
-    Nicolas Tessore, Lucia Fonseca de la Bella
+    Nicolas Tessore, Lucia F. de la Bella
 
 
 Projections in cosmic lensing
