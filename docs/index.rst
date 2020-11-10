@@ -1,4 +1,6 @@
-|Logo|
+.. image:: _static/corfu-logo.svg
+   :alt: Logo
+   :width: 360
 
 .. include:: ../README.rst
 
@@ -12,7 +14,3 @@ Table of Contents
    results
    usage
    reference
-
-
-.. |Logo| image:: _static/corfu-logo.svg
-   :alt: Logo
