@@ -49,10 +49,10 @@ Other important two-point functions in weak lensing are galaxy clustering and ga
 Galaxy clustering quantifies correlations between galaxy number density fields
 
 .. math::
-   :label: w_gg
-   
-    w_{gg}(\theta)
-        = \frac{1}{c^2} \iint_{0}^{\infty}  \! b(x_1) n_1(x_1)H(x_1) \, \frac{b(x_2) n_2(x_2)H(x_2) \, \xi(r_{12}; t_1, t_2) \, dx_1 \, dx_2 \; ,
+   :label: w_gk
+    
+     w_{gg}(\theta)
+         = \frac{1}{c^2} \iint_{0}^{\infty}  \! b(x_1) n_1(x_1)H(x_1) \, \frac{b(x_2) n_2(x_2)H(x_2) \, \xi(r_{12}; t_1, t_2) \, dx_1 \, dx_2 \; ,
 
 where :math:`b(x)` is the bias parameter and :math:`H(x)` the Hubble parameter at a redshift corresponding to a comoving distance :math:`x`.
 
