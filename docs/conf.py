@@ -61,8 +61,11 @@ html_theme_options = {
     'sidebarwidth': 300,
 }
 
+html_logo = '_static/corfu-logo-small.svg'
+
 html_sidebars = {
-    '**': ['globaltoc.html', 'searchbox.html']
+    'index': [],
+    '**': ['globaltoc.html', 'links.html', 'searchbox.html'],
 }
 
 html_use_index = False
