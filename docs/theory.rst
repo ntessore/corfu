@@ -243,44 +243,64 @@ Integrals of this form can be efficiently evaluated over a logarithmic range of
 Having obtained the function :math:`\xi(r; t_1, t_2)`, we need to integrate it
 against the filter functions :math:`f_1(x_1)` and :math:`f_2(x_2)`.  These are
 usually obtained, either directly or indirectly, from observations, and thus
-given on a fixed grid of :math:`x_1` and :math:`x_2` values.
+given on a fixed grid of :math:`x_1` and :math:`x_2` values.  Furthermore, the
+correlations :math:`\xi(r; t_1, t_2)` change smoothly with :math:`r`,
+:math:`t_1`, and :math:`t_2`.  Therefore, the numerical integration appears
+indeed straightforward: Use a fixed-grid quadrature scheme over the :math:`(x_1,
+x_2)` grid and interpolate :math:`\xi(r; t_1, t_2)` to the points
+:math:`r_{12}`, :math:`t(x_1)` and :math:`t(x_2)` of the filter grid.
 
-At first sight, this seems an easy proposition: The correlations :math:`\xi(r;
-t_1, t_2)` change only slowly with :math:`t_1` and :math:`t_2`, and are readily
-interpolated to the values :math:`t(x_1)` and :math:`t(x_2)` of the filter grid.
-
-To understand how numerical issues arise when our various functions are defined
-on grids of either :math:`x_1`, :math:`x_2`, or :math:`r`, we construct a change
-of variables from the filter grid :math:`x_1, x_2` to a polar coordinate system
-where :math:`r = \sqrt{x_1^2 + x_2^2 - 2x_1x_2 \cos\theta}` is the radial
-coordinate.  To find the angular coordinate, we only have to write :math:`r^2`
-as a sum of squares; a symmetric choice is
+In practice, this naive approach sometimes suffers from a catastrophic loss of
+precision at small scales.  The reason is that, although the function
+:math:`\xi(r; t_1, t_2)` does change smoothly with all of :math:`r`,
+:math:`t_1`, and :math:`t_2`, the resolution of the filter grid :math:`x_1, x_2`
+can nevertheless be insufficient to properly resolve :math:`\xi(r; t_1, t_2)`
+over the entire function domain.  To see this, we construct a change of
+variables from :math:`x_1, x_2` to a polar coordinate system where :math:`r =
+\sqrt{x_1^2 + x_2^2 - 2x_1x_2 \cos\theta}` is the radial coordinate.  To find
+the angular coordinate, we only have to write :math:`r^2` as a sum of squares; a
+symmetric choice is
 
 .. math::
 
     r^2
-    = \biggl\{(x_1 - x_2) \, \sqrt{\frac{1 + \cos\theta}{2}}\biggr\}^2
-    + \biggl\{(x_1 + x_2) \, \sqrt{\frac{1 - \cos\theta}{2}}\biggr\}^2 \;.
+    = \Bigl[(x_1 - x_2) \, \sqrt{(1 + \cos\theta)/2}\Bigr]^2
+    + \Bigl[(x_1 + x_2) \, \sqrt{(1 - \cos\theta)/2}\Bigr]^2 \;.
 
 We therefore introduce the angle :math:`\alpha` as :math:`\tan(\alpha) =
 \sqrt{\frac{1 - \cos\theta}{1 + \cos\theta}} \frac{x_1 + x_2}{x_1 - x_2}`.
 Conversely, the distances :math:`x_1, x_2` for given :math:`r, \alpha` are
 
 .. math::
+   :label: x_12-of-r-alpha
 
     x_{1,2}
     = \sqrt{\frac{1 + \cos(\theta)}{2}} \, \frac{r \sin\alpha}{\sin\theta}
     \pm \sqrt{\frac{1 - \cos\theta}{2}} \, \frac{r \cos\alpha}{\sin\theta} \;.
 
+We can now overlay a regular :math:`(x_1, x_2)` grid with :math:`(x_1, x_2)`
+ellipses of constant :math:`r`, given by :eq:`x_12-of-r-alpha`.  The result is
+shown in :numref:`fig_exact-grid`.  We see that the ellipses below a certain
+scale :math:`r` fall entirely between the first grid square, and are hence
+invisible to the fixed-grid quadrature.  Since the correlation function
+generally shows power law behaviour, these lost contributions to the integral
+are significant, since they come from where :math:`\xi(r)` is largest.
 
 .. _fig_exact-grid:
 .. figure:: figures/exact-grid.*
    :alt: integration grids
 
-   The different grids for the exact integration.
+   The different grids for the numerical quadrature.
+
+Fortunately, :numref:`fig_exact-grid` suggests a solution to the problem.
+To account for every ellipse, i.e. every radius :math:`r` at which
+:math:`xi(r, t_1, t_2)` is known, it suffices to go through the :math:`x_1`
+and compute extra points :math:`x_2` as the solution for given :math:`x_1` and
+:math:`r` (i.e. the intersections of ellipses and vertical lines in
+:numref:`fig_exact-grid`).
 
 
-Limber's Approximation
+Limber's approximation
 ----------------------
 
 Write the angular correlation function :eq:`w` as the integral over the mean
@@ -382,7 +402,7 @@ FFTLog algorithm to compute either the unequal-time matter correlation function
 :eq:`ptoxi-exact` or Limber's matter correlation function :eq:`ptoxi-limber`.
 
 
-Angular Power Spectrum
+Angular power spectrum
 ----------------------
 
 The angular correlation function :math:`w(\theta)` of a scalar field is related
