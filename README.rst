@@ -2,9 +2,9 @@
 
 .. header
 
-*********
-``corfu``
-*********
+*****
+corfu
+*****
 
 |GitHub| |PyPI| |Docs|
 
@@ -94,19 +94,18 @@ page.  For an explanation of how the computation works, see the `theory`_ page.
 .. file links
 
 .. |corfu.py| replace:: ``corfu.py``
-.. _corfu.py: corfu.py
+.. _corfu.py: https://github.com/ntessore/corfu/blob/master/corfu.py
 
 
 .. layout
 
-.. |Logo| image:: docs/_static/corfu-logo.svg
+.. |Logo| image:: https://github.com/ntessore/corfu/blob/master/docs/_static/corfu-logo-small.svg?raw=true
    :alt: Logo
-   :width: 200
 
 
 .. definitions
 
-.. |corfu| replace:: ``corfu``
+.. |corfu| replace:: **corfu**
 
 .. |GitHub| image:: https://img.shields.io/badge/github-ntessore%2Fcorfu-lightgrey
    :target: https://github.com/ntessore/corfu
