@@ -45,6 +45,27 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
+# If true, figures, tables and code-blocks are automatically numbered if they
+# have a caption. The numref role is enabled. Obeyed so far only by HTML and
+# LaTeX builders. Default is False.
+numfig = True
+
+# If set to 0, figures, tables and code-blocks are continuously numbered
+# starting at 1.
+numfig_secnum_depth = 0
+
+
+# -- Options for math -------------------------------------------------------
+
+# Set this option to True if you want all displayed math to be numbered. The
+# default is False.
+math_number_all = True
+
+# If True, displayed math equations are numbered across pages when numfig is
+# enabled. The numfig_secnum_depth setting is respected. The eq, not numref,
+# role must be used to reference equation numbers. Default is True.
+math_numfig = True
+
 
 # -- Options for HTML output -------------------------------------------------
 

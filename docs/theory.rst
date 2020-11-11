@@ -45,26 +45,33 @@ at cosmic times :math:`t_1` and :math:`t_2` corresponding to :math:`x_1` and
 :eq:`w-kappa` and :eq:`q`; however, everything that follows applies identically
 to nonflat geometries.
 
-Other important two-point functions in weak lensing are galaxy clustering and galaxy-galaxy lensing.
-Galaxy clustering quantifies correlations between galaxy number density fields
+Other important two-point functions in weak lensing are galaxy clustering and
+galaxy-galaxy lensing.  Galaxy clustering quantifies correlations between galaxy
+number density fields
+
+.. math::
+   :label: w_gg
+
+    w_{gg}(\theta)
+    = \frac{1}{c^2} \iint_{0}^{\infty}  \! b(x_1) n_1(x_1)H(x_1) \,
+            b(x_2) n_2(x_2)H(x_2) \, \xi(r_{12}; t_1, t_2) \, dx_1 \, dx_2 \;,
+
+where :math:`b(x)` is the bias parameter and :math:`H(x)` the Hubble parameter
+at a redshift corresponding to a comoving distance :math:`x`.
+
+Galaxy-galaxy lensing quantifies the correlation between the shape of background
+(or source) and foreground (lens) galaxy number density. In the weak lensing
+regime, the observed galaxy shape is the sum of an intrinsic (unlensed
+component) and a shear due to gravitational lensing. For simplicity, we only
+consider the shear component:
 
 .. math::
    :label: w_gk
-    
-     w_{gg}(\theta)
-         = \frac{1}{c^2} \iint_{0}^{\infty}  \! b(x_1) n_1(x_1)H(x_1) \, b(x_2) n_2(x_2)H(x_2) \, \xi(r_{12}; t_1, t_2) \, dx_1 \, dx_2 \; ,
 
-where :math:`b(x)` is the bias parameter and :math:`H(x)` the Hubble parameter at a redshift corresponding to a comoving distance :math:`x`.
-
-
-Galaxy-galaxy lensing quantifies the correlation between the shape of background (or source) and foreground (lens) galaxy number density. In the weak lensing regime, the observed galaxy shape is the sum of an intrinsic (unlensed component) and a shear due to gravitational lensing. For simplicity, we only consider the shear component:
-
-.. math::
-   :label: w_gk
-    
-     w_{\kappa g}(\theta)
-        = \frac{3H_0^2\Omega_m}{2c^3} \iint_{0}^{\infty} \! \frac{q_1(x_1) \, x_1}{a(x_1)} \, b(x_2) n_2(x_2)H(x_2) \, \xi(r_{12}; t_1, t_2) dx_1 \, dx_2 \;. 
-
+    w_{\kappa g}(\theta)
+    = \frac{3H_0^2\Omega_m}{2c^3} \iint_{0}^{\infty} \!
+            \frac{q_1(x_1) \, x_1}{a(x_1)} \, b(x_2) n_2(x_2)H(x_2) \,
+                                        \xi(r_{12}; t_1, t_2) dx_1 \, dx_2 \;.
 
 Generic form:
 
@@ -224,7 +231,7 @@ This is done by expressing the integral relationship :eq:`ptoxi` between the two
 functions in terms of the Bessel function :math:`J_{1/2}`,
 
 .. math::
-   :label: ptoxi_exact
+   :label: ptoxi-exact
 
     \xi(r; t_1, t_2)
     = \frac{1}{(2\pi)^{3/2}} \int_{0}^{\infty} \! P(k; t_1, t_2) \,
@@ -353,26 +360,26 @@ We thus obtain an expression for Limber's matter correlation function in terms
 of the matter power spectrum,
 
 .. math::
-   :label: ptoxi_limber
+   :label: ptoxi-limber
 
     \xi_{\rm L}(r; t)
     = \frac{1}{2\pi} \int_{0}^{\infty} \! P(k; t) \,
                                             \frac{J_0(kr)}{kr} \, k^2 \, dk \;.
 
 This is of similar form as the unequal-time matter correlation function
-:eq:`ptoxi_exact`, and we can express both in the generic form
+:eq:`ptoxi-exact`, and we can express both in the generic form
 
 .. math::
-   :label: ptoxi_generic
+   :label: ptoxi-generic
 
     \xi_{\mu}(r; \ldots)
-    = \frac{1}{(2\pi)^{1+\mu}} \int_{0}^{\infty} \! P(k; \ldots) \, 
+    = \frac{1}{(2\pi)^{1+\mu}} \int_{0}^{\infty} \! P(k; \ldots) \,
                                 \frac{J_\mu(kr)}{(kr)^{1-\mu}} \, k^2 \, dk \;,
 
 setting :math:`\mu = 0` in the Limber case, and :math:`\mu = 1/2` in the exact
 case.  In practice, this allows us to use a single generic implementation of the
 FFTLog algorithm to compute either the unequal-time matter correlation function
-:eq:`ptoxi_exact` or Limber's matter correlation function :eq:`ptoxi_limber`.
+:eq:`ptoxi-exact` or Limber's matter correlation function :eq:`ptoxi-limber`.
 
 
 Angular Power Spectrum
