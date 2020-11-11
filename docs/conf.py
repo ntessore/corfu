@@ -17,11 +17,11 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 
-from corfu import __version__, __author__, __copyright__
+from corfu import __version__
 
 project = 'corfu'
-copyright = __copyright__
-author = __author__
+copyright = '2020, Nicolas Tessore'
+author = 'Nicolas Tessore'
 
 # The full version, including alpha/beta/rc tags
 release = __version__
