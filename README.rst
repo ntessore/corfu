@@ -1,6 +1,6 @@
 |Logo|
 
-.. begin-header
+.. header
 
 *********
 ``corfu``
@@ -8,13 +8,15 @@
 
 |GitHub| |PyPI| |Docs|
 
-A Python library for projected angular correlation functions.
+The |corfu| library computes exact equal-time or unequal-time angular
+correlation functions and power spectra by projecting three-dimensional
+correlation functions or power spectra onto the sphere in real space.
 
 Maintainers:
     Nicolas Tessore, Lucia F. de la Bella
 
-.. end-header
 
+.. body
 
 Getting Started
 ===============
@@ -68,11 +70,6 @@ For further guidance, see the `documentation`_, and in particular the `usage`_
 page.  For an explanation of how the computation works, see the `theory`_ page.
 
 
-.. text substitutions
-
-.. |corfu| replace:: ``corfu``
-
-
 .. documentation links
 
 .. _documentation: https://corfu.readthedocs.io/en/latest/
@@ -107,7 +104,9 @@ page.  For an explanation of how the computation works, see the `theory`_ page.
    :width: 200
 
 
-.. begin-badges
+.. definitions
+
+.. |corfu| replace:: ``corfu``
 
 .. |GitHub| image:: https://img.shields.io/badge/github-ntessore%2Fcorfu-lightgrey
    :target: https://github.com/ntessore/corfu

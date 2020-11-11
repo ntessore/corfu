@@ -1,8 +1,8 @@
 |Logo|
 
 .. include:: ../README.rst
-   :start-after: begin-header
-   :end-before: end-header
+   :start-after: header
+   :end-before: body
 
 
 Documentation
@@ -25,5 +25,4 @@ Table of Contents
    :width: 360
 
 .. include:: ../README.rst
-   :start-after: begin-badges
-   :end-before: end-badges
+   :start-after: definitions

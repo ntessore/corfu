@@ -85,6 +85,8 @@ html_theme = 'traditional'
 #
 html_theme_options = {
     'sidebarwidth': 320,
+    'body_min_width': 0,
+    'body_max_width': 800,
 }
 
 html_logo = '_static/corfu-logo-small.svg'
