@@ -2,12 +2,12 @@
 
 '''
 
-__version__ = '0.1.0'
+__version__     = '0.1.0'
 
-__author__ = 'Nicolas Tessore'
-__email__ = 'n.tessore@ucl.ac.uk'
-__license__ = 'MIT'
-__copyright__ = '2020, Nicolas Tessore'
+__author__      = 'Nicolas Tessore'
+__email__       = 'n.tessore@ucl.ac.uk'
+__license__     = 'MIT'
+__copyright__   = '2020, Nicolas Tessore'
 
 __all__ = [
     'ptoxi',
