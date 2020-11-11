@@ -6,7 +6,7 @@
 corfu
 *****
 
-|GitHub| |PyPI| |Docs|
+|GitHub| |PyPI| |Docs| |DOI|
 
 The |corfu| library computes exact equal-time or unequal-time angular
 correlation functions and power spectra by projecting three-dimensional
@@ -119,4 +119,5 @@ page.  For an explanation of how the computation works, see the `theory`_ page.
    :target: https://corfu.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
 
-.. end-badges
+.. |DOI| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.4268485.svg
+   :target: https://doi.org/10.5281/zenodo.4268485
