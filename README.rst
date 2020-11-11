@@ -109,7 +109,7 @@ page.  For an explanation of how the computation works, see the `theory`_ page.
 
 .. |GitHub| image:: https://img.shields.io/badge/github-ntessore%2Fcorfu-lightgrey
    :target: https://github.com/ntessore/corfu
-   :alt: GitHub Repository
+   :alt: github: ntessore/corfu
 
 .. |PyPI| image:: https://img.shields.io/pypi/v/corfu.svg
    :target: https://pypi.org/project/corfu
@@ -121,3 +121,4 @@ page.  For an explanation of how the computation works, see the `theory`_ page.
 
 .. |DOI| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.4268485.svg
    :target: https://doi.org/10.5281/zenodo.4268485
+   :alt: DOI: 10.5281/zenodo.4268485
