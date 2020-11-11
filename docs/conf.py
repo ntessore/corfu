@@ -33,8 +33,11 @@ release = __version__
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
+    'sphinx.ext.intersphinx',
     'sphinxcontrib.bibtex',
+    'matplotlib.sphinxext.plot_directive',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -45,14 +48,16 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
+# By default, highlight as Python 3.
+highlight_language = 'python3'
+
+# The name of the Pygments (syntax highlighting) style to use.
+pygments_style = 'trac'
+
 # If true, figures, tables and code-blocks are automatically numbered if they
 # have a caption. The numref role is enabled. Obeyed so far only by HTML and
 # LaTeX builders. Default is False.
 numfig = True
-
-# If set to 0, figures, tables and code-blocks are continuously numbered
-# starting at 1.
-numfig_secnum_depth = 0
 
 
 # -- Options for math -------------------------------------------------------
@@ -79,7 +84,7 @@ html_theme = 'traditional'
 # documentation.
 #
 html_theme_options = {
-    'sidebarwidth': 300,
+    'sidebarwidth': 320,
 }
 
 html_logo = '_static/corfu-logo-small.svg'
@@ -97,3 +102,57 @@ html_show_sourcelink = False
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+
+# -- Intersphinx -------------------------------------------------------------
+
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3/', None),
+    'numpy': ('https://numpy.org/doc/stable/', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
+}
+
+
+#------------------------------------------------------------------------------
+# Matplotlib plot_directive options
+#------------------------------------------------------------------------------
+
+plot_include_source = False
+plot_formats = [('png', 96), 'pdf']
+plot_html_show_formats = False
+plot_html_show_source_link = True
+
+plot_pre_code = '''
+'''
+
+plot_template = '''
+{{ source_code }}
+
+{% for img in images %}
+.. figure:: {{ build_dir }}/{{ img.basename }}.*
+   {% for option in options -%}
+   {{ option }}
+   {% endfor %}
+
+   {{ caption }}
+{% endfor %}
+'''
+
+plot_font_size = 13*72/96.0  # 13 px
+
+plot_rcparams = {
+    'font.size': plot_font_size,
+    'axes.titlesize': plot_font_size,
+    'axes.labelsize': plot_font_size,
+    'xtick.labelsize': plot_font_size,
+    'ytick.labelsize': plot_font_size,
+    'legend.fontsize': plot_font_size,
+    'legend.frameon': False,
+    'figure.figsize': (3.2, 3.2),
+    'figure.subplot.bottom': 0.2,
+    'figure.subplot.left': 0.2,
+    'figure.subplot.right': 0.9,
+    'figure.subplot.top': 0.85,
+    'figure.subplot.wspace': 0.4,
+    'text.usetex': False,
+}
