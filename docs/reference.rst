@@ -4,6 +4,7 @@ Reference
 The ``corfu`` package contains the following functions:
 
 - :func:`~corfu.ptoxi`
+- :func:`~corfu.theta`
 - :func:`~corfu.uneqt`
 - :func:`~corfu.eqt`
 - :func:`~corfu.wtocl`
@@ -12,6 +13,10 @@ The ``corfu`` package contains the following functions:
 ----
 
 .. autofunction:: corfu.ptoxi
+
+----
+
+.. autofunction:: corfu.theta
 
 ----
 

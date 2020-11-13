@@ -9,6 +9,7 @@ __version__     = '0.2.dev'
 
 __all__ = [
     'ptoxi',
+    'theta',
     'uneqt',
     'eqt',
     'wtocl',
@@ -126,6 +127,43 @@ def ptoxi(k, p, q=0, limber=False):
 
     # done, return separations and correlations
     return r, xi
+
+
+def theta(n):
+    r'''compute points and weights for the angular correlation function
+
+    Returns :math:`n` angles :math:`\theta_1, \ldots, \theta_n` and associated
+    weights at which the angular correlation function should be evaluated for
+    an optimal estimate of the angular power spectrum using :func:`corfu.wtocl`.
+
+    Parameters
+    ----------
+    n : int
+        Number of points to return.
+
+    Returns
+    -------
+    theta : array_like (n,)
+        Angles in radians.
+    weights : array_like (n,)
+        Weights for optimal angular power spectrum estimation.
+
+    Warnings
+    --------
+    This function currently uses :func:`numpy.polynomial.legendre.leggauss`. In
+    the future, a better implementation for higher-order modes will be required.
+
+    Notes
+    -----
+    The points and weights correspond to a :math:`n`-point Gauss-Legendre
+    quadrature rule, for which the angular power spectrum estimate
+    :math:`\hat{C}_l` only contains errors from modes larger than :math:`2n-l`.
+
+    '''
+
+    x, w = np.polynomial.legendre.leggauss(n)
+
+    return np.arccos(x[::-1]), w[::-1]
 
 
 def uneqt(theta, f1, f2, xi, progress=False):
@@ -348,39 +386,32 @@ def eqt(theta, f12, xi):
     return w
 
 
-def wtocl(theta, w, lmax):
+def wtocl(w, theta, weights, lmax=None):
+    assert np.ndim(w) >= 1, 'w must be at least 1d array'
     assert np.ndim(theta) == 1, 'theta must be 1d array'
-    assert np.ndim(w) == 1, 'w must be 1d array'
-    assert len(theta) == len(w), 'length of theta and w must agree'
-    assert np.isscalar(lmax) and lmax > 0, 'lmax must be a positive number'
+    assert len(theta) == np.shape(w)[-1], 'shapes of theta and w must agree'
+    assert np.ndim(weights) == 1, 'weights must be 1d array'
+    assert len(weights) == len(theta), 'length of weights and theta must agree'
+    if lmax is not None:
+        assert np.isscalar(lmax) and lmax > 0, 'lmax must be a positive number'
 
-    # force integer lmax
-    lmax = int(lmax)
-
-    # get evaluation points for Legendre fit
-    t = np.linspace(np.min(theta), np.max(theta), 2*lmax)
-    x = np.cos(t)
-    np.log(t, out=t)
-
-    # interpolate function values in log space
-    spl = splrep(np.log(theta), w)
-    f = splev(t, spl, der=0, ext=0)
-
-    # fit Legendre polynomial to interpolated function
-    c = np.polynomial.legendre.legfit(x, f, 2*lmax-1, rcond=0, full=False)
-
-    # use only coefficients up to lmax
-    c = c[:lmax+1]
+    # default lmax is n, else convert to integer
+    if lmax is None:
+        lmax = len(theta)
+    else:
+        lmax = int(lmax)
 
     # ell values
     ell = np.arange(lmax+1)
 
-    # scale to obtain Cls
-    c /= 2*ell+1
-    c *= FOUR_PI
+    # compute the Legendre Vandermonde matrix
+    p = np.polynomial.legendre.legvander(np.cos(theta), lmax)
 
-    # done, return ls and Cls
-    return ell, c
+    # compute Cls
+    c = TWO_PI*np.dot(weights*w, p)
+
+    # done
+    return c
 
 
 def cltow(cl, theta):

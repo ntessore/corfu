@@ -300,6 +300,58 @@ and compute extra points :math:`x_2` as the solution for given :math:`x_1` and
 :numref:`fig_exact-grid`).
 
 
+Angular power spectrum
+----------------------
+
+The angular correlation function :math:`w(\theta)` of a scalar field is related
+to its angular power spectrum :math:`C_l` by the sum :eq:`cltow`. The inverse
+relation is the integral :cite:`2019arXiv190409973T`
+
+.. math::
+   :label: cl-int
+
+   C_l = 2\pi \int_{0}^{\pi} \! w(\theta) \,
+                                    P_l(\cos\theta) \sin(\theta) \, d\theta \;.
+
+We compute an estimate :math:`\hat{C}_l` of the angular power spectrum by
+replacing the integral in :eq:`cl-int` with a numerical quadrature rule using
+:math:`n` points :math:`\theta_k`, :math:`k = 1, \ldots, n`, and associated
+weights :math:`\lambda_k`,
+
+.. math::
+   :label: hat-Cl
+
+    \hat{C}_l
+    = 2\pi \sum_{k=1}^{n} \lambda_k \, w(\theta_k) \, P_l(\cos\theta_k) \;.
+
+In principle, the points :math:`\theta_k` and weights :math:`\lambda_k` can be
+chosen arbitrarily.  However, a :math:`n`-point Gauss--Legendre quadrature rule
+is optimal in the sense that it recovers the orthogonality relation of the
+Legendre polynomials
+
+.. math::
+   :label: gaussleg
+
+    \sum_{k=1}^{n} \lambda_k \, P_l(\cos\theta_k) \,  P_{l'}(\cos\theta_k)
+    = \int_{0}^{\pi} \! P_l(\cos\theta) \, P_{l'}(\cos\theta)
+        \sin(\theta) \, d\theta
+    = \frac{2}{2l+1} \, \delta_{ll'}
+
+identically for :math:`l + l' \le 2n-1`.  Inserting the expansion :eq:`cltow` of
+:math:`w(\theta)` into :eq:`hat-Cl` and using :eq:`gaussleg`, we find the
+angular power spectrum estimate
+
+.. math::
+
+    \hat{C}_l
+    = C_l
+    + \sum_{l' \ge 2n-l} \frac{2l'+1}{2} \, C_{l'} \sum_{k=1}^{n}
+                    \lambda_k \, P_l(\cos\theta_k) \, P_{l'}(\cos\theta_k) \;.
+
+Using a Gauss--Legendre quadrature rule, the error of the angular power spectrum
+estimate :math:`\hat{C}_l` thus only contains modes with :math:`l' \ge 2n-l`.
+
+
 Limber's approximation
 ----------------------
 
@@ -400,42 +452,6 @@ setting :math:`\mu = 0` in the Limber case, and :math:`\mu = 1/2` in the exact
 case.  In practice, this allows us to use a single generic implementation of the
 FFTLog algorithm to compute either the unequal-time matter correlation function
 :eq:`ptoxi-exact` or Limber's matter correlation function :eq:`ptoxi-limber`.
-
-
-Angular power spectrum
-----------------------
-
-The angular correlation function :math:`w(\theta)` of a scalar field is related
-to its angular power spectrum :math:`C_l` by the sum :eq:`cltow`. The inverse
-relation is the integral :cite:`2019arXiv190409973T`
-
-.. math::
-   :label: w_to_cl
-
-   C_l = 2\pi \int_{0}^{\pi} \! w(\theta) \,
-                                    P_l(\cos\theta) \sin(\theta) \, d\theta \;,
-
-which is yet another difficult oscillatory integral to compute. Clearly, an
-alternative approach is needed.
-
-Given a set of angles :math:`\theta_1, \theta_2, \ldots`, the computed angular
-correlation function forms the vector :math:`w = (w_k)` with components
-:math:`w_k = w(\theta_k)`.  Let :math:`M = (m_{kl})` be the matrix with entries
-:math:`m_{kl} = (2l + 1)/(4\pi) \, P_l(\cos\theta_k)` up to some maximum number
-:math:`l_{\max}`.  The truncated sum :eq:`cltow` can hence be written
-
-.. math::
-   :label: cl_to_w
-
-    w_k
-    = \sum_{l=0}^{l_{\max}} m_{kl} \, C_l
-
-or, in matrix form, :math:`w = Mc`, if :math:`c = (C_l)` is the vector of
-angular power spectrum entries.
-
-Hence, to obtain :math:`C_l` for :math:`l \le l_{\max}` from :math:`w(\theta)`,
-compute sufficiently many values :math:`w_k`, and use a least squares solution
-of the matrix equation.
 
 
 References
