@@ -17,7 +17,7 @@ __all__ = [
 ]
 
 import numpy as np
-from scipy.special import loggamma
+from scipy.special import loggamma, poch
 from scipy.interpolate import splrep, splev, RectBivariateSpline
 
 # constants
@@ -62,53 +62,60 @@ def ptoxi(k, p, q=0, limber=False):
     lnkn = np.log(k[-1])
     lnkc = (lnk1 + lnkn)/2
     dlnk = (lnkn - lnk1)/(n-1)
+    jc = (n-1)/2
+    j = np.arange(n)
 
     # make sure given k is linear in log space
-    assert np.allclose(k, np.logspace(lnk1/LN_10, lnkn/LN_10, n)), 'k array not linear in log space'
+    if not np.allclose(k, np.exp(lnkc + (j-jc)*dlnk)):
+        raise ValueError('k array not linear in log space')
 
     # find low-ringing kr near unity
-    a = (mu+1+q)/2
-    b = (mu+1-q)/2
-    c = PI_HALF/dlnk
-    u = loggamma(a + 1j*c)
-    v = loggamma(b + 1j*c)
-    u = LN_2/dlnk + (u.imag + v.imag)/PI
+    xp = (mu+1+q)/2
+    xm = (mu+1-q)/2
+    y = PI_HALF/dlnk
+    zp = loggamma(xp + 1j*y)
+    zm = loggamma(xm + 1j*y)
+    u = LN_2/dlnk + (zp.imag + zm.imag)/PI
     lnkr = (u - np.round(u))*dlnk
 
     # compute Hankel transform coefficients
-    c = np.arange(0, n//2+1, dtype=float)
-    c *= PI/(n*dlnk)
-    u = np.empty(len(c), dtype=complex)
-    v = np.empty(len(c), dtype=complex)
-    u.real[:] = a
-    v.real[:] = b
-    u.imag[:] = c
-    v.imag[:] = c
+    y = np.linspace(0, np.pi*(n//2)/(n*dlnk), n//2+1)
+    u = np.empty(n//2+1, dtype=complex)
+    v = np.empty(n//2+1, dtype=complex)
+    u.imag[:] = y
+    u.real[:] = xm
+    loggamma(u, out=v)
+    u.real[:] = xp
     loggamma(u, out=u)
-    loggamma(v, out=v)
-    c *= 2*(LN_2 - lnkr)
+    y *= 2*(LN_2 - lnkr)
     u.real -= v.real
     u.real += LN_2*q
     u.imag += v.imag
-    u.imag += c
+    u.imag += y
     np.exp(u, out=u)
-    if np.isnan(u[0]):
-        if a > 0:
-            u[0] = 0
-        else:
-            raise ValueError(f'singular transform for q = {q:g}')
-    del(v)
 
-    # ensure that kr is good
-    assert n & 1 or np.isclose(u[-1].real, u[-1].real+u[-1].imag), 'unable to construct low-ringing transform, try odd number of points'
+    # fix last coefficient to be real
+    u.imag[-1] = 0
+
+    # deal with special cases
+    if not np.isfinite(u[0]):
+        # write u_0 = 2^q Gamma(xp)/Gamma(xm) = 2^q poch(xm, xp-xm)
+        # poch() handles special cases for negative integers correctly
+        u[0] = 2**q * poch(xm, xp-xm)
+        # the transform may still be singular
+        if np.isinf(u[0]):
+            raise ValueError(f'singular transform for q = {q}')
+
+    # ensure that kr is good for n even
+    if not n&1 and not np.isclose(u[-1].imag, 0):
+        raise ValueError('unable to construct low-ringing transform, '
+                         'try odd number of points or different q')
 
     # input array for transform
     xi = np.copy(p)  # allocates memory
 
-    # input factor for transform
-    j = np.arange(1, n+1, dtype=float)
-    j -= (n+1)/2
-    xi *= np.exp((1+mu-q)*j*dlnk)
+    # factor of (k/k_c)^{mu+1-q} for input array
+    xi *= np.exp((mu+1-q)*(j-jc)*dlnk)
 
     # Hankel transform via real FFT
     xi = np.fft.rfft(xi, axis=-1)
@@ -116,14 +123,15 @@ def ptoxi(k, p, q=0, limber=False):
     xi = np.fft.irfft(xi, n, axis=-1)
     xi[..., :] = xi[..., ::-1]
 
-    # output factor for transform
-    xi *= np.exp(-((2-mu+q)*j*dlnk + (2-mu+q)*lnkr - 3*lnkc))
-
-    # prefactor for correlation function
-    xi /= TWO_PI**(1+mu)
+    # factor of (r/r_c)^{mu+1-q} (k_c r_c)^{mu+1-q} for output array
+    xi *= np.exp((mu+1-q)*((j-jc)*dlnk + lnkr))
 
     # set up r in log space
     r = np.exp(lnkr)/k[::-1]
+
+    # prefactor for correlation function
+    xi /= TWO_PI**(1+mu)
+    xi /= r**3
 
     # done, return separations and correlations
     return r, xi
