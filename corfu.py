@@ -29,7 +29,7 @@ LN_2 = 6.9314718055994530941723212145817656807550013436026E-01
 LN_10 = 2.3025850929940456840179914546843642076011014886288E+00
 
 
-def ptoxi(k, p, q=0, limber=False):
+def ptoxi(k, p, q=0.0, d=0.0, limber=False):
     '''compute 3d correlation function from power spectrum
 
     Parameters
@@ -40,7 +40,9 @@ def ptoxi(k, p, q=0, limber=False):
         Power spectrum. Can be multidimensional. Last axis must agree with the
         wavenumber axis.
     q : float, optional
-        Bias parameter for FFTLog.
+        Exponent of power law bias for fast Hankel transform.
+    d : float, optional
+        Logarithmic shift of output sequence.
     limber : bool, optional
         Compute Limber correlation function for equal time approximation.
         Default is `False`.
@@ -69,14 +71,14 @@ def ptoxi(k, p, q=0, limber=False):
     if not np.allclose(k, np.exp(lnkc + (j-jc)*dlnk)):
         raise ValueError('k array not linear in log space')
 
-    # find low-ringing kr near unity
+    # tweak d to fulfil low-ringing condition
     xp = (mu+1+q)/2
     xm = (mu+1-q)/2
     y = PI_HALF/dlnk
     zp = loggamma(xp + 1j*y)
     zm = loggamma(xm + 1j*y)
-    u = LN_2/dlnk + (zp.imag + zm.imag)/PI
-    lnkr = (u - np.round(u))*dlnk
+    u = (LN_2 - d)/dlnk + (zp.imag + zm.imag)/PI
+    d = d + (u - np.round(u))*dlnk
 
     # compute Hankel transform coefficients
     y = np.linspace(0, np.pi*(n//2)/(n*dlnk), n//2+1)
@@ -87,7 +89,7 @@ def ptoxi(k, p, q=0, limber=False):
     loggamma(u, out=v)
     u.real[:] = xp
     loggamma(u, out=u)
-    y *= 2*(LN_2 - lnkr)
+    y *= 2*(LN_2 - d)
     u.real -= v.real
     u.real += LN_2*q
     u.imag += v.imag
@@ -124,10 +126,10 @@ def ptoxi(k, p, q=0, limber=False):
     xi[..., :] = xi[..., ::-1]
 
     # factor of (r/r_c)^{mu+1-q} (k_c r_c)^{mu+1-q} for output array
-    xi *= np.exp((mu+1-q)*((j-jc)*dlnk + lnkr))
+    xi *= np.exp((mu+1-q)*((j-jc)*dlnk + d))
 
     # set up r in log space
-    r = np.exp(lnkr)/k[::-1]
+    r = np.exp(d)/k[::-1]
 
     # prefactor for correlation function
     xi /= TWO_PI**(1+mu)
