@@ -5,8 +5,8 @@ The ``corfu`` package contains the following functions:
 
 - :func:`~corfu.ptoxi`
 - :func:`~corfu.theta`
-- :func:`~corfu.uneqt`
-- :func:`~corfu.eqt`
+- :func:`~corfu.xitow`
+- :func:`~corfu.xitow_limber`
 - :func:`~corfu.wtocl`
 - :func:`~corfu.cltow`
 
@@ -20,11 +20,11 @@ The ``corfu`` package contains the following functions:
 
 ----
 
-.. autofunction:: corfu.uneqt
+.. autofunction:: corfu.xitow
 
 ----
 
-.. autofunction:: corfu.eqt
+.. autofunction:: corfu.xitow_limber
 
 ----
 

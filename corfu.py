@@ -10,8 +10,8 @@ __version__     = '0.2.dev'
 __all__ = [
     'ptoxi',
     'theta',
-    'uneqt',
-    'eqt',
+    'xitow',
+    'xitow_limber',
     'wtocl',
     'cltow',
 ]
@@ -176,7 +176,7 @@ def theta(n):
     return np.arccos(x[::-1]), w[::-1]
 
 
-def uneqt(theta, f1, f2, xi, progress=False):
+def xitow(theta, f1, f2, xi, progress=False):
     '''unequal time projection'''
 
     assert np.ndim(theta) == 1, 'theta must be 1d array'
@@ -330,7 +330,7 @@ def uneqt(theta, f1, f2, xi, progress=False):
     return w
 
 
-def eqt(theta, f12, xi):
+def xitow_limber(theta, f12, xi):
     '''equal time projection'''
 
     assert np.ndim(theta) == 1, 'theta must be 1d array'

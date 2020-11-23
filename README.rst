@@ -61,7 +61,7 @@ sight and obtain angular correlation functions or angular power spectra:
 
 - Use the |corfu.ptoxi|_ function to obtain the 3d (matter) correlation
   function from the 3d (matter) power spectrum.
-- Use the |corfu.uneqt|_ function to obtain the projected angular correlation
+- Use the |corfu.xitow|_ function to obtain the projected angular correlation
   function from the 3d (matter) correlation function.
 - Use the |corfu.wtocl|_ function to obtain the angular power spectrum from the
   angular correlation function.
@@ -84,8 +84,8 @@ page.  For an explanation of how the computation works, see the `theory`_ page.
 .. |corfu.ptoxi| replace:: ``corfu.ptoxi()``
 .. _corfu.ptoxi: https://corfu.readthedocs.io/en/latest/reference.html#corfu.ptoxi
 
-.. |corfu.uneqt| replace:: ``corfu.uneqt()``
-.. _corfu.uneqt: https://corfu.readthedocs.io/en/latest/reference.html#corfu.uneqt
+.. |corfu.xitow| replace:: ``corfu.xitow()``
+.. _corfu.xitow: https://corfu.readthedocs.io/en/latest/reference.html#corfu.xitow
 
 .. |corfu.wtocl| replace:: ``corfu.wtocl()``
 .. _corfu.wtocl: https://corfu.readthedocs.io/en/latest/reference.html#corfu.wtocl

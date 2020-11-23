@@ -12,7 +12,7 @@ general process is as follows.
 - If the objective is the computation of an angular power spectrum, use the
   :func:`corfu.theta` function to obtain an optimal set of points and weights.
 - If you have a 3d (matter) correlation function and filter functions along the
-  line of sight, use the :func:`corfu.uneqt` function to obtain the projected
+  line of sight, use the :func:`corfu.xitow` function to obtain the projected
   angular correlation function.
 - If you have the angular correlation function, use the :func:`corfu.wtocl`
   function to obtain the angular power spectrum.
