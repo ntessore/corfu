@@ -410,22 +410,23 @@ def wtocl(w, theta, lmax=None):
     c = dct(w, type=2, axis=-1, norm=None)
     c /= n
 
+    # transformation matrix
+    a = np.zeros((lmax+1, n))
+
     # first row
-    a = FOUR_PI
-    cl[..., 0] = a/2*c[..., 0]
+    a[0, 0] = FOUR_PI
     for k in range(2, n, 2):
-        a *= (k-3)/(k+1)
-        cl[..., 0] += a*c[..., k]
+        a[0, k] = (k-3)/(k+1)*a[0, k-2]
 
     # remaining rows
-    d = TWO_PI
+    a[0, 0] = TWO_PI
     for l in range(1, min(lmax+1, n)):
-        d *= (1 - 1/(2*l+1))
-        a = d
-        cl[..., l] = a*c[..., l]
+        a[l, l] = (1 - 1/(2*l+1))*a[l-1, l-1]
         for k in range(l+2, n, 2):
-            a *= (k*(k+l-2)*(k-l-3))/((k-2)*(k+l+1)*(k-l))
-            cl[..., l] += a*c[..., k]
+            a[l, k] = (k*(k+l-2)*(k-l-3))/((k-2)*(k+l+1)*(k-l))*a[l, k-2]
+
+    # compute Cls
+    cl = np.dot(c, a.T)
 
     # done
     return cl
