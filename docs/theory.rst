@@ -310,46 +310,93 @@ relation is the integral :cite:`2019arXiv190409973T`
 .. math::
    :label: cl-int
 
-   C_l = 2\pi \int_{0}^{\pi} \! w(\theta) \,
+    C_l = 2\pi \int_{0}^{\pi} \! w(\theta) \,
                                     P_l(\cos\theta) \sin(\theta) \, d\theta \;.
 
-We compute an estimate :math:`\hat{C}_l` of the angular power spectrum by
-replacing the integral in :eq:`cl-int` with a numerical quadrature rule using
-:math:`n` points :math:`\theta_k`, :math:`k = 1, \ldots, n`, and associated
-weights :math:`\lambda_k`,
+To recover the :math:`C_l` in the real-space approach, we must evaluate this
+integral from a discrete set of :math:`n` angular correlation function values
+:math:`w(\theta_k)`, :math:`k = 0, \ldots, n-1`, that we compute as described
+above.  We do so, not by numerically approximating the integral :eq:`cl-int`,
+but instead by interpolating the function :math:`w(\theta)` and computing the
+exact angular power spectrum of the approximate function.
+
+As our interpolation scheme, we choose a Chebyshev series of order :math:`n` in
+:math:`\cos\theta`,
+
+.. math::
+   :label: w-cheb
+
+    \hat{w}(\theta)
+    = \frac{c_0}{2} + \sum_{k=1}^{n-1} c_k \, T_k(\cos\theta) \;,
+
+due to the well-known advantages of Chebyshev interpolation.  This is of course
+simply a Fourier series in :math:`\theta`,
+
+.. math::
+   :label: w-fourier
+
+    \hat{w}(\theta)
+    = \frac{c_0}{2} + \sum_{k=1}^{n-1} c_k \cos(k\theta) \;.
+
+The coefficients :math:`c_k` of the Chebyshev interpolation :eq:`w-cheb` are
+given by
+
+.. math::
+   :label: c_k
+
+    c_k = \frac{2}{n} \sum_{j=0}^{n-1} w(\theta_j) \, \cos(k \theta_j) \;,
+    \quad
+    \theta_j = \pi \, (2j + 1)/(2n) \;.
+
+The coefficient array can efficiently be computed from the angular correlation
+function values :math:`w(\theta_j)` using the discrete Fourier transform
+(DCT-II).
+
+Inserting the interpolated angular correlation function :eq:`w-cheb` into the
+integral :eq:`cl-int`, we find our estimate of the angular power spectrum,
 
 .. math::
    :label: hat-Cl
 
     \hat{C}_l
-    = 2\pi \sum_{k=1}^{n} \lambda_k \, w(\theta_k) \, P_l(\cos\theta_k) \;.
+    = 2\pi \int_{0}^{\pi} \! \hat{w}(\theta) \,
+                                    P_l(\cos\theta) \sin(\theta) \, d\theta
+    = \sum_{k=0}^{n-1} a_{lk} \, c_k \;,
 
-In principle, the points :math:`\theta_k` and weights :math:`\lambda_k` can be
-chosen arbitrarily.  However, a :math:`n`-point Gauss--Legendre quadrature rule
-is optimal in the sense that it recovers the orthogonality relation of the
-Legendre polynomials
-
-.. math::
-   :label: gaussleg
-
-    \sum_{k=1}^{n} \lambda_k \, P_l(\cos\theta_k) \,  P_{l'}(\cos\theta_k)
-    = \int_{0}^{\pi} \! P_l(\cos\theta) \, P_{l'}(\cos\theta)
-        \sin(\theta) \, d\theta
-    = \frac{2}{2l+1} \, \delta_{ll'}
-
-identically for :math:`l + l' \le 2n-1`.  Inserting the expansion :eq:`cltow` of
-:math:`w(\theta)` into :eq:`hat-Cl` and using :eq:`gaussleg`, we find the
-angular power spectrum estimate
+where the matrix :math:`A = (a_{lk})` that transforms the Chebyshev coefficients
+:math:`c_k` to the angular power spectrum estimate :math:`\hat{C}_l` has entries
 
 .. math::
+   :label: a_lk
 
-    \hat{C}_l
-    = C_l
-    + \sum_{l' \ge 2n-l} \frac{2l'+1}{2} \, C_{l'} \sum_{k=1}^{n}
-                    \lambda_k \, P_l(\cos\theta_k) \, P_{l'}(\cos\theta_k) \;.
+    \begin{aligned}
+    a_{l0} &= 2\pi \, \delta_{l0} \;, \\
+    a_{lk} &= 2\pi \int_{0}^{\pi} \! \cos(k\theta) \,
+                                P_l(\cos\theta) \, \sin(\theta) \, d\theta \;,
+    \quad
+    k > 0 \;.
+    \end{aligned}
 
-Using a Gauss--Legendre quadrature rule, the error of the angular power spectrum
-estimate :math:`\hat{C}_l` thus only contains modes with :math:`l' \ge 2n-l`.
+The integral in :eq:`a_lk` was given by :cite:`1877etsh_book_____F`.  Using the
+gamma function, the matrix entries :math:`a_{lk}` can be written in concise form
+as
+
+.. math::
+
+    a_{lk} = \begin{cases}
+        2\pi
+        & \text{if $k = l = 0$,} \\
+        -\frac{\pi \, k \, \Gamma(\frac{k-l-1}{2}) \, \Gamma(\frac{k+l}{2})}
+              {2 \, \Gamma(\frac{k-l+2}{2}) \, \Gamma(\frac{k+l+3}{2})}
+        & \text{if $k \ge l$ and $k - l$ is even,} \\
+        0
+        & \text{otherwise.}
+    \end{cases}
+
+The matrix :math:`A` is hence upper triangular, and all odd superdiagonals
+vanish.  The entries :math:`a_{lk}` can be quickly and easily calculated using
+a recurrence, and it is not necessary to construct the matrix :math:`A`
+explicitly.
 
 
 Limber's approximation

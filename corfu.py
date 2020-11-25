@@ -19,6 +19,7 @@ __all__ = [
 import numpy as np
 from scipy.special import loggamma, poch
 from scipy.interpolate import splrep, splev, RectBivariateSpline
+from scipy.fft import dct
 
 # constants
 PI = 3.1415926535897932384626433832795028841971693993751E+00
@@ -140,40 +141,29 @@ def ptoxi(k, p, q=0.0, d=0.0, limber=False):
 
 
 def theta(n):
-    r'''compute points and weights for the angular correlation function
+    r'''compute nodes for the angular correlation function
 
-    Returns :math:`n` angles :math:`\theta_1, \ldots, \theta_n` and associated
-    weights at which the angular correlation function should be evaluated for
-    an optimal estimate of the angular power spectrum using :func:`corfu.wtocl`.
+    Returns :math:`n` angles :math:`\theta_0, \ldots, \theta_{n-1}` at which to
+    compute the angular correlation function when estimating the angular power
+    spectrum using :func:`corfu.wtocl`.
 
     Parameters
     ----------
     n : int
-        Number of points to return.
+        Number of nodes.
 
     Returns
     -------
     theta : array_like (n,)
         Angles in radians.
-    weights : array_like (n,)
-        Weights for optimal angular power spectrum estimation.
-
-    Warnings
-    --------
-    This function currently uses :func:`numpy.polynomial.legendre.leggauss`. In
-    the future, a better implementation for higher-order modes will be required.
-
-    Notes
-    -----
-    The points and weights correspond to a :math:`n`-point Gauss-Legendre
-    quadrature rule, for which the angular power spectrum estimate
-    :math:`\hat{C}_l` only contains errors from modes larger than :math:`2n-l`.
 
     '''
 
-    x, w = np.polynomial.legendre.leggauss(n)
+    x = np.arange(n, dtype=float)
+    x += 0.5
+    x *= np.pi/n
 
-    return np.arccos(x[::-1]), w[::-1]
+    return x
 
 
 def xitow(theta, f1, f2, xi, progress=False):
@@ -396,49 +386,66 @@ def xitow_limber(theta, f12, xi):
     return w
 
 
-def wtocl(w, theta, weights, lmax=None):
+def wtocl(w, theta, lmax=None):
     assert np.ndim(w) >= 1, 'w must be at least 1d array'
     assert np.ndim(theta) == 1, 'theta must be 1d array'
+    assert len(theta) > 0, 'theta must not be empty'
     assert len(theta) == np.shape(w)[-1], 'shapes of theta and w must agree'
-    assert np.ndim(weights) == 1, 'weights must be 1d array'
-    assert len(weights) == len(theta), 'length of weights and theta must agree'
     if lmax is not None:
         assert np.isscalar(lmax) and lmax > 0, 'lmax must be a positive number'
 
-    # default lmax is n, else convert to integer
+    # length n of the Fourier series
+    n = len(theta)
+
+    # default lmax is n-1 (the last non-zero entry), else convert to integer
     if lmax is None:
-        lmax = len(theta)
+        lmax = n-1
     else:
         lmax = int(lmax)
 
-    # ell values
-    ell = np.arange(lmax+1)
+    # array for Cls
+    cl = np.zeros(np.shape(w)[:-1] + (lmax+1,))
 
-    # compute the Legendre Vandermonde matrix
-    p = np.polynomial.legendre.legvander(np.cos(theta), lmax)
+    # compute the Fourier coefficients with a DCT-II
+    c = dct(w, type=2, axis=-1, norm=None)
+    c /= n
 
-    # compute Cls
-    c = TWO_PI*np.dot(weights*w, p)
+    # first row
+    a = FOUR_PI
+    cl[..., 0] = a/2*c[..., 0]
+    for k in range(2, n, 2):
+        a *= (k-3)/(k+1)
+        cl[..., 0] += a*c[..., k]
+
+    # remaining rows
+    d = TWO_PI
+    for l in range(1, min(lmax+1, n)):
+        d *= (1 - 1/(2*l+1))
+        a = d
+        cl[..., l] = a*c[..., l]
+        for k in range(l+2, n, 2):
+            a *= (k*(k+l-2)*(k-l-3))/((k-2)*(k+l+1)*(k-l))
+            cl[..., l] += a*c[..., k]
 
     # done
-    return c
+    return cl
 
 
 def cltow(cl, theta):
-    assert np.ndim(cl) == 1, 'cl must be 1d array'
+    assert np.ndim(cl) >= 1, 'cl must be at least 1d'
     assert np.ndim(theta) == 1, 'theta must be 1d array'
 
     # get evaluation points for Legendre series
     x = np.cos(theta)
 
     # ell numbers
-    ell = np.arange(len(cl))
+    ell = np.arange(np.shape(cl)[-1])
 
     # series coefficients from Cls
     c = (2*ell+1)/FOUR_PI*cl
 
     # evaluate Legendre polynomial
-    w = np.polynomial.legendre.legval(x, c)
+    w = np.polynomial.legendre.legval(x, c.T)
 
     # done, return correlation function
     return w
