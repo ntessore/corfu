@@ -18,8 +18,7 @@ __all__ = [
 
 import numpy as np
 from scipy.special import loggamma, poch
-from scipy.interpolate import splrep, splev, RectBivariateSpline
-from scipy.fft import dct
+from scipy.interpolate import RectBivariateSpline
 
 # constants
 PI = 3.1415926535897932384626433832795028841971693993751E+00
@@ -27,7 +26,6 @@ PI_HALF = 1.5707963267948966192313216916397514420985846996876E+00
 TWO_PI = 6.2831853071795864769252867665590057683943387987502E+00
 FOUR_PI = 1.2566370614359172953850573533118011536788677597500E+01
 LN_2 = 6.9314718055994530941723212145817656807550013436026E-01
-LN_10 = 2.3025850929940456840179914546843642076011014886288E+00
 
 
 def ptoxi(k, p, q=0.0, d=0.0, limber=False):
@@ -386,50 +384,41 @@ def xitow_limber(theta, f12, xi):
     return w
 
 
-def wtocl(w, theta, lmax=None):
-    assert np.ndim(w) >= 1, 'w must be at least 1d array'
+def wtocl(theta, w, lmax=None):
     assert np.ndim(theta) == 1, 'theta must be 1d array'
+    assert np.ndim(w) >= 1, 'w must be at least 1d array'
     assert len(theta) > 0, 'theta must not be empty'
     assert len(theta) == np.shape(w)[-1], 'shapes of theta and w must agree'
     if lmax is not None:
         assert np.isscalar(lmax) and lmax > 0, 'lmax must be a positive number'
 
-    # length n of the Fourier series
-    n = len(theta)
-
-    # default lmax is n-1 (the last non-zero entry), else convert to integer
+    # get default lmax, or force integer lmax
     if lmax is None:
-        lmax = n-1
+        lmax = len(theta)-1
     else:
         lmax = int(lmax)
 
-    # array for Cls
-    cl = np.zeros(np.shape(w)[:-1] + (lmax+1,))
+    # force integer lmax
+    lmax = int(lmax)
 
-    # compute the Fourier coefficients with a DCT-II
-    c = dct(w, type=2, axis=-1, norm=None)
-    c /= n
+    # get evaluation points for Legendre fit
+    x = np.cos(theta)
 
-    # transformation matrix
-    a = np.zeros((lmax+1, n))
+    # fit Legendre polynomial to angular correlation function
+    c = np.polynomial.legendre.legfit(x, np.transpose(w), lmax, full=False).T
 
-    # first row
-    a[0, 0] = FOUR_PI
-    for k in range(2, n, 2):
-        a[0, k] = (k-3)/(k+1)*a[0, k-2]
+    # use only coefficients up to lmax
+    c = c[..., :lmax+1]
 
-    # remaining rows
-    a[0, 0] = TWO_PI
-    for l in range(1, min(lmax+1, n)):
-        a[l, l] = (1 - 1/(2*l+1))*a[l-1, l-1]
-        for k in range(l+2, n, 2):
-            a[l, k] = (k*(k+l-2)*(k-l-3))/((k-2)*(k+l+1)*(k-l))*a[l, k-2]
+    # scale Legendre coefficients to obtain angular power spectrum
+    s = np.arange(lmax+1, dtype=float)
+    s *= 2
+    s += 1
+    s /= FOUR_PI
+    c /= s
 
-    # compute Cls
-    cl = np.dot(c, a.T)
-
-    # done
-    return cl
+    # done, return Cls
+    return c
 
 
 def cltow(cl, theta):

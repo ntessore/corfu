@@ -300,105 +300,6 @@ and compute extra points :math:`x_2` as the solution for given :math:`x_1` and
 :numref:`fig_exact-grid`).
 
 
-Angular power spectrum
-----------------------
-
-The angular correlation function :math:`w(\theta)` of a scalar field is related
-to its angular power spectrum :math:`C_l` by the sum :eq:`cltow`. The inverse
-relation is the integral :cite:`2019arXiv190409973T`
-
-.. math::
-   :label: cl-int
-
-    C_l = 2\pi \int_{0}^{\pi} \! w(\theta) \,
-                                    P_l(\cos\theta) \sin(\theta) \, d\theta \;.
-
-To recover the :math:`C_l` in the real-space approach, we must evaluate this
-integral from a discrete set of :math:`n` angular correlation function values
-:math:`w(\theta_k)`, :math:`k = 0, \ldots, n-1`, that we compute as described
-above.  We do so, not by numerically approximating the integral :eq:`cl-int`,
-but instead by interpolating the function :math:`w(\theta)` and computing the
-exact angular power spectrum of the approximate function.
-
-As our interpolation scheme, we choose a Chebyshev series of order :math:`n` in
-:math:`\cos\theta`,
-
-.. math::
-   :label: w-cheb
-
-    \hat{w}(\theta)
-    = \frac{c_0}{2} + \sum_{k=1}^{n-1} c_k \, T_k(\cos\theta) \;,
-
-due to the well-known advantages of Chebyshev interpolation.  This is of course
-simply a Fourier series in :math:`\theta`,
-
-.. math::
-   :label: w-fourier
-
-    \hat{w}(\theta)
-    = \frac{c_0}{2} + \sum_{k=1}^{n-1} c_k \cos(k\theta) \;.
-
-The coefficients :math:`c_k` of the Chebyshev interpolation :eq:`w-cheb` are
-given by
-
-.. math::
-   :label: c_k
-
-    c_k = \frac{2}{n} \sum_{j=0}^{n-1} w(\theta_j) \, \cos(k \theta_j) \;,
-    \quad
-    \theta_j = \pi \, (2j + 1)/(2n) \;.
-
-The coefficient array can efficiently be computed from the angular correlation
-function values :math:`w(\theta_j)` using the discrete Fourier transform
-(DCT-II).
-
-Inserting the interpolated angular correlation function :eq:`w-cheb` into the
-integral :eq:`cl-int`, we find our estimate of the angular power spectrum,
-
-.. math::
-   :label: hat-Cl
-
-    \hat{C}_l
-    = 2\pi \int_{0}^{\pi} \! \hat{w}(\theta) \,
-                                    P_l(\cos\theta) \sin(\theta) \, d\theta
-    = \sum_{k=0}^{n-1} a_{lk} \, c_k \;,
-
-where the matrix :math:`A = (a_{lk})` that transforms the Chebyshev coefficients
-:math:`c_k` to the angular power spectrum estimate :math:`\hat{C}_l` has entries
-
-.. math::
-   :label: a_lk
-
-    \begin{aligned}
-    a_{l0} &= 2\pi \, \delta_{l0} \;, \\
-    a_{lk} &= 2\pi \int_{0}^{\pi} \! \cos(k\theta) \,
-                                P_l(\cos\theta) \, \sin(\theta) \, d\theta \;,
-    \quad
-    k > 0 \;.
-    \end{aligned}
-
-The integral in :eq:`a_lk` was given by :cite:`1877etsh_book_____F`.  Using the
-gamma function, the matrix entries :math:`a_{lk}` can be written in concise form
-as
-
-.. math::
-
-    a_{lk} = \begin{cases}
-        2\pi
-        & \text{if $k = l = 0$,} \\
-        -\frac{\pi \, k \, \Gamma(\frac{k-l-1}{2}) \, \Gamma(\frac{k+l}{2})}
-              {2 \, \Gamma(\frac{k-l+2}{2}) \, \Gamma(\frac{k+l+3}{2})}
-        & \text{if $k \ge l$ and $k - l$ is even,} \\
-        0
-        & \text{otherwise.}
-    \end{cases}
-
-The matrix :math:`A` is hence upper triangular, and all odd superdiagonals
-vanish.  The entries :math:`a_{lk}` can be quickly and easily calculated using
-a recurrence, and it is not necessary to construct the matrix :math:`A`
-explicitly.
-
-
 Limber's approximation
 ----------------------
 
@@ -499,6 +400,42 @@ setting :math:`\mu = 0` in the Limber case, and :math:`\mu = 1/2` in the exact
 case.  In practice, this allows us to use a single generic implementation of the
 FFTLog algorithm to compute either the unequal-time matter correlation function
 :eq:`ptoxi-exact` or Limber's matter correlation function :eq:`ptoxi-limber`.
+
+
+Angular power spectrum
+----------------------
+
+The angular correlation function :math:`w(\theta)` of a scalar field is related
+to its angular power spectrum :math:`C_l` by the sum :eq:`cltow`. The inverse
+relation is the integral :cite:`2019arXiv190409973T`
+
+.. math::
+   :label: w_to_cl
+
+   C_l = 2\pi \int_{0}^{\pi} \! w(\theta) \,
+                                    P_l(\cos\theta) \sin(\theta) \, d\theta \;.
+
+Instead of a numerical integration of the angular power spectrum, we perform
+the following procedure.
+
+Given a set of angles :math:`\theta_1, \theta_2, \ldots`, the computed angular
+correlation function forms the vector :math:`w = (w_k)` with components
+:math:`w_k = w(\theta_k)`.  Let :math:`A = (a_{kl})` be the matrix with entries
+:math:`a_{kl} = (2l + 1)/(4\pi) \, P_l(\cos\theta_k)` up to some maximum number
+:math:`l_{\max}`.  The truncated sum :eq:`cltow` can hence be written
+
+.. math::
+   :label: cl_to_w
+
+    w_k
+    = \sum_{l=0}^{l_{\max}} a_{kl} \, C_l
+
+or, in matrix form, :math:`w = Ac`, if :math:`c = (C_l)` is the vector of
+angular power spectrum entries.
+
+Hence, to obtain :math:`C_l` for :math:`l \le l_{\max}` from :math:`w(\theta)`,
+we compute sufficiently many values :math:`w_k`, and use a least squares
+solution of the matrix equation.
 
 
 References

@@ -10,7 +10,7 @@ general process is as follows.
   e.g. from CAMB, CLASS, or Eisenstein-Hu, use the :func:`corfu.ptoxi` function
   to obtain the 3d (matter) correlation function.
 - If the objective is the computation of an angular power spectrum, use the
-  :func:`corfu.theta` function to obtain an optimal set of points and weights.
+  :func:`corfu.theta` function to obtain a set of evaluation points.
 - If you have a 3d (matter) correlation function and filter functions along the
   line of sight, use the :func:`corfu.xitow` function to obtain the projected
   angular correlation function.
