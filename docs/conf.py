@@ -77,23 +77,49 @@ math_numfig = True
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'traditional'
+html_theme = 'alabaster'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
 html_theme_options = {
-    'sidebarwidth': 320,
-    'body_min_width': 0,
-    'body_max_width': 800,
+    'sidebar_width': '280px',
+    'logo': 'corfu-logo-small.svg',
+    'head_font_family': 'unset',
+    'font_family': 'unset',
+    'font_size': 'unset',
+    'base_bg': 'none',
+    'base_text': 'none',
+    'body_text': 'none',
+    'body_text_align': 'justify',
+    'sidebar_text': 'none',
+    'sidebar_link': 'none',
+    'sidebar_link_underscore': 'none',
+    'sidebar_list': 'none',
+    'link': 'none',
+    'link_hover': 'none',
+    'pre_bg': '#f6f6f6',
+    'code_bg': '#f6f6f6',
+    'code_text': 'none',
+    'code_hover': 'none',
+    'code_font_family': 'monospace',
+    'code_font_size': 'unset',
+    'xref_border': 'none',
+    'xref_bg': 'none',
+    'show_powered_by': False,
+    'show_relbars': True,
+    'extra_nav_links': {
+        'GitHub Repository': 'https://github.com/ntessore/corfu',
+        'Python Package Index': 'https://pypi.org/project/corfu',
+        'Documentation': 'https://corfu.readthedocs.io/',
+    },
 }
 
-html_logo = '_static/corfu-logo-small.svg'
+# html_logo = '_static/corfu-logo-small.svg'
 
 html_sidebars = {
     'index': [],
-    '**': ['globaltoc.html', 'links.html', 'searchbox.html'],
 }
 
 html_use_index = False
