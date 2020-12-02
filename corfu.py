@@ -95,9 +95,6 @@ def ptoxi(k, p, q=0.0, d=0.0, limber=False):
     u.imag += y
     np.exp(u, out=u)
 
-    # fix last coefficient to be real
-    u.imag[-1] = 0
-
     # deal with special cases
     if not np.isfinite(u[0]):
         # write u_0 = 2^q Gamma(xp)/Gamma(xm) = 2^q poch(xm, xp-xm)
@@ -108,9 +105,14 @@ def ptoxi(k, p, q=0.0, d=0.0, limber=False):
             raise ValueError(f'singular transform for q = {q}')
 
     # ensure that kr is good for n even
-    if not n&1 and not np.isclose(u[-1].imag, 0):
-        raise ValueError('unable to construct low-ringing transform, '
-                         'try odd number of points or different q')
+    if not n&1:
+        # low ringing kr should make last coefficient real
+        if not np.isclose(u[-1].imag, 0):
+            raise ValueError('unable to construct low-ringing transform, '
+                             'try odd number of points or different q')
+
+        # fix last coefficient to be real
+        u.imag[-1] = 0
 
     # input array for transform
     xi = np.copy(p)  # allocates memory
