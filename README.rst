@@ -94,12 +94,12 @@ page.  For an explanation of how the computation works, see the `theory`_ page.
 .. file links
 
 .. |corfu.py| replace:: ``corfu.py``
-.. _corfu.py: https://github.com/ntessore/corfu/blob/master/corfu.py
+.. _corfu.py: https://github.com/ntessore/corfu/blob/main/corfu.py
 
 
 .. layout
 
-.. |Logo| image:: https://github.com/ntessore/corfu/blob/master/docs/_static/corfu-logo-small.svg?raw=true
+.. |Logo| image:: https://github.com/ntessore/corfu/blob/main/docs/_static/corfu-logo-small.svg?raw=true
    :alt: Logo
 
 
